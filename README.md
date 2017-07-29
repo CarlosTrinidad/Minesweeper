@@ -1,5 +1,5 @@
 # Minesweeper
 Mineswerper en p5.js
 
-![alt text](http://imgur.com/quvchof)
+![alt text](http://i.imgur.com/quvchof.png)
 
