@@ -74,8 +74,8 @@ Cell.prototype.getNeighbors = function () {
     for (var j = -1; j < 2; j++) {
         newX = this.i + i;
         newY = this.j + j;
-        if (newX > -1 && newX < rows && newY > -1 && newY < cols) {
-          if (table[newX][newY].bomb) {
+        if (newX > -1 && newX < cols && newY > -1 && newY < rows) {
+          if (table[newY][newX].bomb) {
             total++;
           }
         }
@@ -96,9 +96,9 @@ Cell.prototype.openNeighbors = function () {
     for (var j = -1; j < 2; j++) {
         newX = this.i + i;
         newY = this.j + j;
-        if (newX > -1 && newX < rows && newY > -1 && newY < cols) {
-          if (!table[newX][newY].open && !table[newX][newY].bomb ) {
-            table[newX][newY].reveal();
+        if (newX > -1 && newX < cols && newY > -1 && newY < rows) {
+          if (!table[newY][newX].open && !table[newY][newX].bomb ) {
+            table[newY][newX].reveal();
           }
         }
     }

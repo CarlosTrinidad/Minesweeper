@@ -24,13 +24,13 @@ var bombsInput;
 function setup() {
   rows = 9;
   cols = 9;
-  createCanvas(601, 601);
-  createP('');
-  rstBtn = createButton("New Game");
-  createP('');
-  rowInput = createInput("9");
-  colInput = createInput("9");
-  bombsInput = createInput("10");
+  var canvas = createCanvas(601, 601);
+  canvas.mousePressed(clickCell);
+  canvas.parent('canvasDiv');
+  rstBtn = select('#newGame');
+  rowInput = select('#rowsNum');
+  colInput = select('#colsNum');
+  bombsInput = select('#bombsNum');
   rstBtn.mousePressed(setGame);
   setGame();
   // console.log(table);
@@ -43,7 +43,7 @@ function setGame() {
   canvasW = rows * totalSize;
   canvasH = cols * totalSize;
 
-  resizeCanvas(windowWidth , canvasH+1, true);
+  resizeCanvas(canvasH + 10, canvasW+50, true);
 
   showWin = false;
   showLose = false;
@@ -57,19 +57,22 @@ function setGame() {
   table = makeArray2D(rows, cols);
   gifWin = loadGif('img/win/'+floor(random(1,31))+'.gif');
   gifLose = loadGif('img/lose/'+floor(random(1,31))+'.gif');
-  for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < cols; j++) {
-      table[i][j] = new Cell(i, j, totalSize);
+  for (var i = 0; i < cols; i++) {
+    for (var j = 0; j < rows; j++) {
+      table[j][i] = new Cell(i, j, totalSize);
     }
   }
   setBombs(bombs);
-  for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < cols; j++) {
-      table[i][j].getNeighbors();
+  for (var i = 0; i < cols; i++) {
+    for (var j = 0; j < rows; j++) {
+      table[j][i].getNeighbors();
     }
   }
 }
 function setBombs(totalBombs) {
+  if (rows * cols < totalBombs) {
+    totalBombs = rows * cols;
+  }
   while (totalBombs > 0) {
     var x = floor(random(rows));
     var y = floor(random(cols));
@@ -82,32 +85,30 @@ function setBombs(totalBombs) {
   }
 }
 function gameOver() {
-  for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < cols; j++) {
-      table[i][j].reveal();
+  for (var i = 0; i < cols; i++) {
+    for (var j = 0; j < rows; j++) {
+      table[j][i].reveal();
     }
   }
 }
 function checkWin() {
   var ret = true;
-  for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < cols; j++) {
-      if (!table[i][j].open && !table[i][j].bomb) {
+  for (var i = 0; i < cols; i++) {
+    for (var j = 0; j < rows; j++) {
+      if (!table[j][i].open && !table[j][i].bomb) {
         ret = false;
       }
     }
   }
   return ret;
 }
-
-function mousePressed() {
-  if (mouseIsPressed) {
+function clickCell() {
     if (mouseButton == LEFT){
-      if (mouseX < canvasW && mouseY < canvasH) {
-        if (!table[floor(mouseX / totalSize)][floor(mouseY / totalSize)].flaged) {
-          table[floor(mouseX / totalSize)][floor(mouseY / totalSize)].reveal();
-          if (table[floor(mouseX / totalSize)][floor(mouseY / totalSize)].bomb) {
-            table[floor(mouseX / totalSize)][floor(mouseY / totalSize)].deadBomb = true;
+      if (mouseX < canvasH && mouseY < canvasW) {
+        if (!table[floor(mouseY / totalSize)][floor(mouseX / totalSize)].flaged) {
+          table[floor(mouseY / totalSize)][floor(mouseX / totalSize)].reveal();
+          if (table[floor(mouseY / totalSize)][floor(mouseX / totalSize)].bomb) {
+            table[floor(mouseY / totalSize)][floor(mouseX / totalSize)].deadBomb = true;
             showLose = true;
             gameOver();
           }else {
@@ -120,29 +121,32 @@ function mousePressed() {
       }
     }
     if (mouseButton == RIGHT){
-      if (mouseX < canvasW && mouseY < canvasH) {
+      if (mouseX < canvasH && mouseY < canvasW) {
         console.log(mouseX);
         console.log(mouseY);
-        table[floor(mouseX / totalSize)][floor(mouseY / totalSize)].flagCell();
+        table[floor(mouseY / totalSize)][floor(mouseX / totalSize)].flagCell();
       }
     }
-  }
-
-
-
 }
+
 
 function draw() {
 background(255);
-  for (var i = 0; i < rows; i++) {
-    for (var j = 0; j < cols; j++) {
-      table[i][j].show();
+// console.log(table.length);
+// console.log(table[0].length);
+
+if (showWin) {
+  resizeCanvas(canvasH + gifWin.width, canvasW+gifWin.height, true);
+  image(gifWin, 0, canvasW + 2);
+}
+if (showLose) {
+  resizeCanvas(canvasH + gifLose.width, canvasW+gifLose.height, true);
+  image(gifLose, 0, canvasW + 2);
+}
+for (var i = 0; i < cols; i++) {
+  for (var j = 0; j < rows; j++) {
+      table[j][i].show();
     }
   }
-  if (showWin) {
-    image(gifWin, canvasW + 10, 0);
-  }
-  if (showLose) {
-    image(gifLose, canvasW + 10, 0);
-  }
+
 }
