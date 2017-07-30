@@ -9,6 +9,7 @@ function Cell(i, j, w) {
   this.bomb = false;
   this.open = false;
   this.flaged = false;
+  this.deadBomb = false;
   this.neighbors = 0;
 }
 
@@ -21,9 +22,10 @@ Cell.prototype.show = function () {
     rect(this.x, this.y, this.w, this.w);
     noFill();
     if (this.bomb) {
-      fill(207, 13, 13);
-      rect(this.x, this.y, this.w, this.w);
-
+      if (this.deadBomb) {
+        fill(207, 13, 13);
+        rect(this.x, this.y, this.w, this.w);
+      }
       stroke(232, 205, 109);
       bezier(this.xcent, this.ycent, this.xcent, this.ycent - this.w/0.9, this.xcent + this.w/2, this.ycent + this.w/3, this.xcent + this.w/2.7, this.ycent - this.w/2.8);
       fill(212, 40, 40);
